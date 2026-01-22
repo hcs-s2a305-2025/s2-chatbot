@@ -54,9 +54,7 @@ class ChatLogic:
             url = "http://127.0.0.1:8000/good_words/"
             res = requests.get(url)
             result = res.json()["result"]
-            chat.set_replay_data(
-                result, image_idx=7, init_flg=True
-                )
+            chat.set_replay_data(result, image_idx=7, init_flg=True)
             return chat
         elif "おみくじ" in message:
             chat = Chat()
@@ -70,14 +68,21 @@ class ChatLogic:
             self.hit_answer = random.randint(1, 100)
             self.hit_count = 0
             self.status.hitgame_flg = True
-            chat.set_replay_data("1から100の数字を言ってね。\n何回で当たるかな。", image_idx=4)
+            chat.set_replay_data(
+                "1から100の数字を言ってね。\n何回で当たるかな。", image_idx=4
+            )
         elif "何時" in message:
             chat = Chat()
             url = "http://127.0.0.1:8000/get_datetime/"
             res = requests.get(url)
             result = res.json()["result"]
-            chat.set_replay_data(str(result) + "だよ", image_idx = 7, init_flg=True)
+            chat.set_replay_data(str(result) + "だよ", image_idx=7, init_flg=True)
             return chat
+        elif "郵便番号" in message:
+            self.status.zipcode_flg = True
+            chat.set_replay_data(
+                "検索対象の郵便番号を入力してください。\n（ハイフンなし）"
+            )
         elif "追加する機能の処理メッセージ" in message:
             pass
         else:
@@ -222,7 +227,51 @@ class ChatLogic:
             replay_message1 = "せいか～い。\n{}回で正解だよ。\nまた遊んでね。"
             self.status.hitgame_flg = False
             chat.set_replay_data(
-            replay_message1.format(self.hit_count), image_idx=3, init_flg=True
+                replay_message1.format(self.hit_count), image_idx=3, init_flg=True
+            )
+        else:
+            self.hit_count -= 1
+            chat.set_replay_data("うまくいきませんでした。もう一度", image_idx=5)
+        return chat
+
+    def zipcode_func(self, message):
+        """数当て機能
+
+        数当てAPIを呼び出し、チャットの応答メッセージを作成する。
+        計算処理が終わった場合は、計算クラスのインスタンス、機能実行状態の更新を行う。
+
+        Args:
+            message (str): 処理対象のメッセージ.
+
+        Returns:
+            Chat: チャットの応答情報
+
+        """
+        no = message
+        self.hit_count += 1
+        url = "http://127.0.0.1:8000/hitgame/"
+        param = {"answer": self.hit_answer, "no": no}
+        res = requests.get(url, param)
+        result = res.json()["result"]
+        chat = Chat()
+
+        if result == 1:
+            replay_message1 = "すごく惜しいね。\nもう少し大きい値だよ。"
+            chat.set_replay_data(replay_message1, image_idx=8)
+        elif result == 2:
+            replay_message1 = "すごく惜しいね。\nもう少し小さい値だよ。"
+            chat.set_replay_data(replay_message1, image_idx=8)
+        elif result == 3:
+            replay_message1 = "あたりの数はもっと小さい値だよ。"
+            chat.set_replay_data(replay_message1, image_idx=1)
+        elif result == 4:
+            replay_message1 = "あたりの数はもっと大きい値だよ。"
+            chat.set_replay_data(replay_message1, image_idx=2)
+        elif result == 0:
+            replay_message1 = "せいか～い。\n{}回で正解だよ。\nまた遊んでね。"
+            self.status.hitgame_flg = False
+            chat.set_replay_data(
+                replay_message1.format(self.hit_count), image_idx=3, init_flg=True
             )
         else:
             self.hit_count -= 1
