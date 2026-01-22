@@ -71,6 +71,13 @@ class ChatLogic:
             self.hit_count = 0
             self.status.hitgame_flg = True
             chat.set_replay_data("1から100の数字を言ってね。\n何回で当たるかな。", image_idx=4)
+        elif "何時" in message:
+            chat = Chat()
+            url = "http://127.0.0.1:8000/get_datetime/"
+            res = requests.get(url)
+            result = res.json()["result"]
+            chat.set_replay_data(str(result) + "だよ", image_idx = 7, init_flg=True)
+            return chat
         elif "追加する機能の処理メッセージ" in message:
             pass
         else:

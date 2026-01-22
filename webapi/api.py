@@ -5,6 +5,7 @@ from routers import b3_payroll
 from routers import b4_good_words
 from routers import b5_omikuji
 from routers import b6_hitgame
+from routers import b7_get_datetime
 from routers import ex1_dutch_treat
 
 app = FastAPI()
@@ -15,6 +16,7 @@ app.include_router(b3_payroll.router)
 app.include_router(b4_good_words.router)
 app.include_router(b5_omikuji.router)
 app.include_router(b6_hitgame.router)
+app.include_router(b7_get_datetime.router)
 
 # TODO 追加課題の機能追加
 app.include_router(ex1_dutch_treat.router)
