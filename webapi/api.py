@@ -6,7 +6,9 @@ from routers import b4_good_words
 from routers import b5_omikuji
 from routers import b6_hitgame
 from routers import b7_get_datetime
+from routers import b8_zipcode
 from routers import ex1_dutch_treat
+from routers import ex2_hit_blow
 
 app = FastAPI()
 # TODO 規定課題の機能追加
@@ -17,6 +19,8 @@ app.include_router(b4_good_words.router)
 app.include_router(b5_omikuji.router)
 app.include_router(b6_hitgame.router)
 app.include_router(b7_get_datetime.router)
+app.include_router(b8_zipcode.router)
 
 # TODO 追加課題の機能追加
 app.include_router(ex1_dutch_treat.router)
+app.include_router(ex2_hit_blow.router)

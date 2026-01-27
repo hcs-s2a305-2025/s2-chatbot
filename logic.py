@@ -65,11 +65,20 @@ class ChatLogic:
             chat.set_replay_data(result, image_idx, init_flg=True)
             return chat
         elif "数当て" in message:
-            self.hit_answer = random.randint(1, 100)
+            self.hit_answer = random.sample()
             self.hit_count = 0
             self.status.hitgame_flg = True
             chat.set_replay_data(
                 "1から100の数字を言ってね。\n何回で当たるかな。", image_idx=4
+            )
+        elif "ヒットブロー" in message:
+            genList = list(range(10))
+            randList = random.sample(genList, 4)
+            self.hit_answer = "".join(map(str, randList))
+            self.hit_count = 0
+            self.status.hitblow_flg = True
+            chat.set_replay_data(
+                "4桁の数字(重複なし)を言ってね。\n何回で当たるかな～", image_idx=4
             )
         elif "何時" in message:
             chat = Chat()
@@ -81,7 +90,7 @@ class ChatLogic:
         elif "郵便番号" in message:
             self.status.zipcode_flg = True
             chat.set_replay_data(
-                "検索対象の郵便番号を入力してください。\n（ハイフンなし）"
+                "検索対象の郵便番号を\n入力してください。(ハイフンなし)"
             )
         elif "追加する機能の処理メッセージ" in message:
             pass
@@ -234,10 +243,10 @@ class ChatLogic:
             chat.set_replay_data("うまくいきませんでした。もう一度", image_idx=5)
         return chat
 
-    def zipcode_func(self, message):
-        """数当て機能
+    def hitblow_func(self, message):
+        """ヒットブロー機能
 
-        数当てAPIを呼び出し、チャットの応答メッセージを作成する。
+        ヒットブローAPIを呼び出し、チャットの応答メッセージを作成する。
         計算処理が終わった場合は、計算クラスのインスタンス、機能実行状態の更新を行う。
 
         Args:
@@ -249,31 +258,44 @@ class ChatLogic:
         """
         no = message
         self.hit_count += 1
-        url = "http://127.0.0.1:8000/hitgame/"
-        param = {"answer": self.hit_answer, "no": no}
+        url = "http://127.0.0.1:8000/hit_blow/"
+        param = {"answer": self.hit_answer, "number": no, "count":self.hit_count}
+        res = requests.get(url, param)
+        result = res.json()["result"]
+        correct = res.json()["correct"]
+        chat = Chat()
+
+        if correct == 0:
+            chat.set_replay_data(result, image_idx=8)
+        elif correct == 1:
+            self.status.hitblow_flg = False
+            chat.set_replay_data(result, image_idx=7,init_flg=True)
+        elif correct == 2:
+            self.hit_count -= 1
+            chat.set_replay_data(result, image_idx=2)
+
+        return chat
+
+    def zipcode_func(self, message):
+        """郵便番号検索機能
+
+        郵便番号APIを呼び出し、チャットの応答メッセージを作成する。
+        計算処理が終わった場合は、計算クラスのインスタンス、機能実行状態の更新を行う。
+
+        Args:
+            message (str): 処理対象のメッセージ.
+
+        Returns:
+            Chat: チャットの応答情報
+
+        """
+
+        url = "http://127.0.0.1:8000/address/"
+        param = {"code":message}
         res = requests.get(url, param)
         result = res.json()["result"]
         chat = Chat()
 
-        if result == 1:
-            replay_message1 = "すごく惜しいね。\nもう少し大きい値だよ。"
-            chat.set_replay_data(replay_message1, image_idx=8)
-        elif result == 2:
-            replay_message1 = "すごく惜しいね。\nもう少し小さい値だよ。"
-            chat.set_replay_data(replay_message1, image_idx=8)
-        elif result == 3:
-            replay_message1 = "あたりの数はもっと小さい値だよ。"
-            chat.set_replay_data(replay_message1, image_idx=1)
-        elif result == 4:
-            replay_message1 = "あたりの数はもっと大きい値だよ。"
-            chat.set_replay_data(replay_message1, image_idx=2)
-        elif result == 0:
-            replay_message1 = "せいか～い。\n{}回で正解だよ。\nまた遊んでね。"
-            self.status.hitgame_flg = False
-            chat.set_replay_data(
-                replay_message1.format(self.hit_count), image_idx=3, init_flg=True
-            )
-        else:
-            self.hit_count -= 1
-            chat.set_replay_data("うまくいきませんでした。もう一度", image_idx=5)
+        chat.set_replay_data("住所は\n{}\nです。".format(result), image_idx=7, init_flg=True)
+
         return chat

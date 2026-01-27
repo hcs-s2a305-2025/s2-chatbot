@@ -5,7 +5,7 @@ router = APIRouter()
 
 # 数当てAPI
 @router.get("/hitgame/", tags=["hitgame"], summary="数当てAPI")
-async def omikuji(answer: int, no: int):
+async def play_hit_game(answer: int, no: int):
     """
     指定された answer と no の当たり判定結果を返す API エンドポイント。
 
