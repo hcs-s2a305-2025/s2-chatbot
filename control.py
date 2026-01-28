@@ -64,7 +64,21 @@ class ChatControl:
             else:
                 chat = self.chatLogic.replay(message)
         except ValueError as err:
+            self.chatLogic.status.record_flg = False
+            self.chatLogic.status.calc_flg = False
+            self.chatLogic.status.payroll_flg = False
+            self.chatLogic.status.dutch_treat_flg = False
+            self.chatLogic.status.hitgame_flg = False
+            self.chatLogic.status.hitblow_flg = False
+            self.chatLogic.status.week_flg = False
+            self.chatLogic.status.zipcode_flg = False
+            self.chatLogic.status.event_flg = False
+            self.chatLogic.status.salary_flg = False
+            self.chatLogic.status.exam_flg = False
+            self.chatLogic.status.condition_flg = False
+            self.chatLogic.status.jyanken_flg = False
+            self.chatLogic.status.translator_flg = False
             chat = Chat()
             print(err)
-            chat.set_replay_data("データの入力形式があっていません。\nもう一度入力してください。", image_idx=2)
+            chat.set_replay_data("数字以外は入力しないでください。\nそんなことしたらやめちゃうよ。", image_idx=2, init_flg=True)
         return chat

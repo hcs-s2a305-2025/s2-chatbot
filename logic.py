@@ -1,5 +1,6 @@
 import requests
 import random
+import json
 
 from chat import Chat
 from status import FuncStatus
@@ -65,7 +66,7 @@ class ChatLogic:
             chat.set_replay_data(result, image_idx, init_flg=True)
             return chat
         elif "数当て" in message:
-            self.hit_answer = random.sample()
+            self.hit_answer = random.randint(1,100)
             self.hit_count = 0
             self.status.hitgame_flg = True
             chat.set_replay_data(
@@ -92,6 +93,8 @@ class ChatLogic:
             chat.set_replay_data(
                 "検索対象の郵便番号を\n入力してください。(ハイフンなし)"
             )
+        elif "記録" in message:
+            self.status.record_flg = True
         elif "追加する機能の処理メッセージ" in message:
             pass
         else:
@@ -212,7 +215,7 @@ class ChatLogic:
             Chat: チャットの応答情報
 
         """
-        no = message
+        no = int(message)
         self.hit_count += 1
         url = "http://127.0.0.1:8000/hitgame/"
         param = {"answer": self.hit_answer, "no": no}
@@ -298,4 +301,14 @@ class ChatLogic:
 
         chat.set_replay_data("住所は\n{}\nです。".format(result), image_idx=7, init_flg=True)
 
+        return chat
+
+    def record_func(self, message):
+        url = "http://127.0.0.1:8000/log_record/"
+        body = { "message": message }
+        res = requests.post(url, json.dumps(body))
+        chat = Chat()
+
+        self.status.record_flg = False
+        chat.set_replay_data(res, image_idx=7, init_flg=True)
         return chat

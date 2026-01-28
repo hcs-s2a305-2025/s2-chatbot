@@ -7,6 +7,7 @@ from routers import b5_omikuji
 from routers import b6_hitgame
 from routers import b7_get_datetime
 from routers import b8_zipcode
+from routers import b9_log_record
 from routers import ex1_dutch_treat
 from routers import ex2_hit_blow
 
@@ -20,6 +21,7 @@ app.include_router(b5_omikuji.router)
 app.include_router(b6_hitgame.router)
 app.include_router(b7_get_datetime.router)
 app.include_router(b8_zipcode.router)
+app.include_router(b9_log_record.router)
 
 # TODO 追加課題の機能追加
 app.include_router(ex1_dutch_treat.router)
