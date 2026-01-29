@@ -1,7 +1,6 @@
 import tkinter as tk
 import tkinter.font as font
 from time import sleep
-import random
 
 from control import ChatControl
 

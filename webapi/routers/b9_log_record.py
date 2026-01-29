@@ -12,7 +12,7 @@ class Item(BaseModel):
 
 @router.post("/log_record/", tags=["log_record"], summary="メッセージ記録 API")
 async def record(item: Item):
-    """
+  """
   送られてきたメッセージをファイルに保存する API エンドポイント。
 
   Parameters:
@@ -23,7 +23,8 @@ async def record(item: Item):
 
   Example:
   """
+  file_path = "./data/record.txt"
 
-    file_utils.file_append("./data/record.txt", item)
+  file_utils.file_append(file_path, item. message)
 
-    return {"result": "保存しました。"}
+  return {'result': "保存しました。"}

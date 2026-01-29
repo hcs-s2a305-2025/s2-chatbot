@@ -95,6 +95,16 @@ class ChatLogic:
             )
         elif "記録" in message:
             self.status.record_flg = True
+            chat.set_replay_data(
+                "記録したいメッセージを\n教えてください。",
+                image_idx=6
+            )
+        elif "ログ出力" in message:
+            url = "http://127.0.0.1:8000/log_output/"
+            res = requests.get(url)
+            result = res.json()["result"]
+            replay_message = "".join(result)
+            chat.set_replay_data(replay_message, image_idx=4, init_flg=True)
         elif "追加する機能の処理メッセージ" in message:
             pass
         else:
@@ -307,8 +317,9 @@ class ChatLogic:
         url = "http://127.0.0.1:8000/log_record/"
         body = { "message": message }
         res = requests.post(url, json.dumps(body))
+        result = res.json()["result"]
         chat = Chat()
 
         self.status.record_flg = False
-        chat.set_replay_data(res, image_idx=7, init_flg=True)
+        chat.set_replay_data(result, image_idx=7, init_flg=True)
         return chat
