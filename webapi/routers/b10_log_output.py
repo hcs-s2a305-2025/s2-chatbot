@@ -1,6 +1,4 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
-import requests
 import file_utils
 
 router = APIRouter()
@@ -21,7 +19,12 @@ async def output():
 
   file_path = "./data/record.txt"
 
-  result = file_utils.file_readlines(file_path)
+  lines = file_utils.file_readlines(file_path)
+
+  try:
+    result = lines[-3:]
+  except IndexError as inderr:
+    result = [inderr]
 
   return {'result': result}
 

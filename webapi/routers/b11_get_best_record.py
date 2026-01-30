@@ -1,6 +1,4 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
-import requests
 import file_utils
 
 router = APIRouter()

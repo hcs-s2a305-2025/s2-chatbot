@@ -102,7 +102,7 @@ class ChatLogic:
                 "記録したいメッセージを\n教えてください。",
                 image_idx=6
             )
-        elif "ログ出力" in message:
+        elif "ログ" in message:
             url = "http://127.0.0.1:8000/log_output/"
             res = requests.get(url)
             result = res.json()["result"]
@@ -269,7 +269,9 @@ class ChatLogic:
     def hit_high_score(self, score):
         url = "http://127.0.0.1:8000/put_best_record/"
         body = {"score": score}
-        requests.put(url, json.dumps(body))
+        res = requests.put(url, json.dumps(body))
+        respons = res.json()["result"]
+        print(respons)
 
         return
 

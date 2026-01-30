@@ -30,15 +30,11 @@ def file_readlines(file_path):
 
   try:
     with open(file_path, mode='r', encoding='UTF-8') as f:
-      try:
-        lines = f.readlines()
-        lines3 = lines[-3:]
-      except IndexError as inerr:
-        lines3 = ['失敗']
+      lines = f.readlines()
   except IOError as err:
     print(err)
 
-  return lines3
+  return lines
 
 
 def file_read(file_path):
