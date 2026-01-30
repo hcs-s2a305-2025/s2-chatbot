@@ -9,6 +9,8 @@ from routers import b7_get_datetime
 from routers import b8_zipcode
 from routers import b9_log_record
 from routers import b10_log_output
+from routers import b11_get_best_record
+from routers import b11_put_best_record
 from routers import ex1_dutch_treat
 from routers import ex2_hit_blow
 
@@ -24,6 +26,8 @@ app.include_router(b7_get_datetime.router)
 app.include_router(b8_zipcode.router)
 app.include_router(b9_log_record.router)
 app.include_router(b10_log_output.router)
+app.include_router(b11_put_best_record.router)
+app.include_router(b11_get_best_record.router)
 
 # TODO 追加課題の機能追加
 app.include_router(ex1_dutch_treat.router)

@@ -69,8 +69,11 @@ class ChatLogic:
             self.hit_answer = random.randint(1,100)
             self.hit_count = 0
             self.status.hitgame_flg = True
+            url = "http://127.0.0.1:8000/get_best_record/"
+            res = requests.get(url)
+            self.highscore = res.json()["result"]
             chat.set_replay_data(
-                "1から100の数字を言ってね。\n何回で当たるかな。", image_idx=4
+                "1から100の数字を言ってね。\n何回で当たるかな～\n最高記録は{}回だよ。".format(self.highscore), image_idx=4
             )
         elif "ヒットブロー" in message:
             genList = list(range(10))
@@ -225,6 +228,8 @@ class ChatLogic:
             Chat: チャットの応答情報
 
         """
+        image = 0
+        inflg = False
         no = int(message)
         self.hit_count += 1
         url = "http://127.0.0.1:8000/hitgame/"
@@ -235,26 +240,38 @@ class ChatLogic:
 
         if result == 1:
             replay_message1 = "すごく惜しいね。\nもう少し大きい値だよ。"
-            chat.set_replay_data(replay_message1, image_idx=8)
+            image = 8
         elif result == 2:
             replay_message1 = "すごく惜しいね。\nもう少し小さい値だよ。"
-            chat.set_replay_data(replay_message1, image_idx=8)
+            image = 8
         elif result == 3:
             replay_message1 = "あたりの数はもっと小さい値だよ。"
-            chat.set_replay_data(replay_message1, image_idx=1)
+            image = 1
         elif result == 4:
             replay_message1 = "あたりの数はもっと大きい値だよ。"
-            chat.set_replay_data(replay_message1, image_idx=2)
+            image = 2
         elif result == 0:
-            replay_message1 = "せいか～い。\n{}回で正解だよ。\nまた遊んでね。"
+            replay_message1 = "せいか～い。\n {}回で正解だよ。また遊んでね。\n".format(self.hit_count)
             self.status.hitgame_flg = False
-            chat.set_replay_data(
-                replay_message1.format(self.hit_count), image_idx=3, init_flg=True
-            )
+            inflg = True
+            if int(self.hit_count) < int(self.highscore):
+                self.hit_high_score(str(self.hit_count))
+                replay_message1 += "最高記録更新！"
         else:
             self.hit_count -= 1
-            chat.set_replay_data("うまくいきませんでした。もう一度", image_idx=5)
+            replay_message1 = "うまくいきませんでした。もう一度"
+            image = 5
+
+        chat.set_replay_data(replay_message1, image_idx = image, init_flg= inflg)
+
         return chat
+
+    def hit_high_score(self, score):
+        url = "http://127.0.0.1:8000/put_best_record/"
+        body = {"score": score}
+        requests.put(url, json.dumps(body))
+
+        return
 
     def hitblow_func(self, message):
         """ヒットブロー機能

@@ -12,19 +12,20 @@ class Item(BaseModel):
 
 @router.post("/log_record/", tags=["log_record"], summary="メッセージ記録 API")
 async def record(item: Item):
-  """
-  送られてきたメッセージをファイルに保存する API エンドポイント。
+    """
+    送られてきたメッセージをファイルに保存する API エンドポイント。
 
-  Parameters:
-  - item (Item): 保存するメッセージを含むデータクラス。
+    Parameters:
+    - item (Item): 保存するメッセージを含むデータクラス。
 
-  Returns:
-  dict: 保存が成功した旨の結果を含む辞書。{"result": "保存しました"}
+    Returns:
+    dict: 保存が成功した旨の結果を含む辞書。{"result": "保存しました"}
 
-  Example:
-  """
-  file_path = "./data/record.txt"
+    Example:
+    """
+    file_path = "./data/record.txt"
+    record_mode = "a"
 
-  file_utils.file_append(file_path, item. message)
+    file_utils.file_append(file_path, item. message + "\n", record_mode)
 
-  return {'result': "保存しました。"}
+    return {'result': "保存しました。"}
